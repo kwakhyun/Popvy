@@ -1,0 +1,14 @@
+.build/
+build/
+dist/
+.DS_Store
+*.xcuserstate
+.swiftpm/
+*.p12
+*.p8
+*.mobileprovision
+.env
+.env.*
+
+# Local validation notes (not public source)
+VALIDATION.md
