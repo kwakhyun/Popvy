@@ -413,6 +413,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
             let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 490, height: 520),
                                   styleMask: [.titled, .closable], backing: .buffered, defer: false)
             window.title = "Popvy 시작하기"
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
+            window.isMovableByWindowBackground = true
             window.isReleasedWhenClosed = false
             window.delegate = self
             window.contentView = NSHostingView(rootView: PermissionSetupView(app: self, setup: accessibilitySetup))
