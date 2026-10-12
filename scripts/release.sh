@@ -26,19 +26,9 @@ codesign --verify --deep --strict "$PAYLOAD/Popvy.app"
 NAME="Popvy-$VERSION-macos-universal"
 hdiutil create -volname "Popvy $VERSION" -srcfolder "$PAYLOAD" -ov -format UDZO "$ARTIFACTS/$NAME.dmg"
 hdiutil verify "$ARTIFACTS/$NAME.dmg"
-ditto -c -k --norsrc --noextattr --keepParent "$PAYLOAD/Popvy.app" "$ARTIFACTS/$NAME.zip"
-# Explicit allowlist: never include local history, .git, build logs, or backups.
-SOURCE_DIR="$STAGING_DIR/Popvy-$VERSION-source"
-mkdir -p "$SOURCE_DIR"
-for item in Package.swift README.md LICENSE .gitignore Sources Tests Resources scripts docs 설치.command; do
-    ditto --norsrc --noextattr "$PROJECT_DIR/$item" "$SOURCE_DIR/$item"
-done
-ditto -c -k --norsrc --noextattr --keepParent "$SOURCE_DIR" "$ARTIFACTS/Popvy-$VERSION-source.zip"
-cp docs/INSTALL.txt "$ARTIFACTS/INSTALL.txt"
-cp docs/RELEASE_NOTES.md "$ARTIFACTS/RELEASE_NOTES.md"
 (
     cd "$ARTIFACTS"
-    shasum -a 256 "$NAME.dmg" "$NAME.zip" "Popvy-$VERSION-source.zip" INSTALL.txt RELEASE_NOTES.md > SHA256SUMS.txt
+    shasum -a 256 "$NAME.dmg" > SHA256SUMS.txt
     shasum -a 256 -c SHA256SUMS.txt
 )
 mkdir -p "$PROJECT_DIR/dist"

@@ -249,7 +249,7 @@ struct SettingsView: View {
             HStack {
                 Button("모든 기록 삭제…", role: .destructive) { app.confirmClear(includingPinned: true) }
                 Spacer()
-                Text("Popvy 1.3.0").font(.system(size: 11)).foregroundStyle(.tertiary)
+                Text("Popvy 1.3.1").font(.system(size: 11)).foregroundStyle(.tertiary)
             }
         }.padding(28).frame(width: 510).fixedSize(horizontal: false, vertical: true).tint(accent)
     }

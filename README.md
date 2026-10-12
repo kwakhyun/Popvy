@@ -11,23 +11,23 @@ Popvy는 `Option + V`로 여는 작은 macOS 클립보드 기록 앱입니다. �
 - 첫 실행 권한 안내와 자동 감지
 - 계정, 서버, 광고, 분석 도구 없이 Mac 안에서 동작
 
-**[DMG 다운로드](https://github.com/kwakhyun/Popvy/releases/download/v1.3.0/Popvy-1.3.0-macos-universal.dmg)** · [모든 릴리스](https://github.com/kwakhyun/Popvy/releases) · [버그 제보](https://github.com/kwakhyun/Popvy/issues)
+**[DMG 다운로드](https://github.com/kwakhyun/Popvy/releases/download/v1.3.1/Popvy-1.3.1-macos-universal.dmg)** · [모든 릴리스](https://github.com/kwakhyun/Popvy/releases) · [버그 제보](https://github.com/kwakhyun/Popvy/issues)
 
 ## 설치
 
 **macOS 13 Ventura 이상**이 필요합니다. 배포 파일 하나에 **Apple Silicon과 Intel** 실행 파일이 모두 들어 있습니다. 설치에 Xcode나 터미널은 필요하지 않습니다. 현재 앱 화면은 한국어로 제공됩니다.
 
-1. **[최신 릴리스](https://github.com/kwakhyun/Popvy/releases/latest)**에서 `Popvy-1.3.0-macos-universal.dmg`를 다운로드합니다. 저장소의 **Code → Download ZIP**은 개발용 소스입니다.
+1. **[최신 릴리스](https://github.com/kwakhyun/Popvy/releases/latest)**에서 `Popvy-1.3.1-macos-universal.dmg`를 다운로드합니다. 저장소의 **Code → Download ZIP**은 개발용 소스입니다.
 2. DMG를 열고 **Popvy.app을 Applications 폴더로 드래그**합니다.
 3. 복사가 끝나면 디스크 이미지를 추출하고, 응용 프로그램 폴더에서 Popvy를 실행합니다.
 4. 첫 안내의 **시스템 설정 열기**를 누르고 **손쉬운 사용 → Popvy**를 켭니다. 필요한 경우 Mac에서 직접 인증합니다.
 5. 허용을 감지하면 안내가 완료 상태로 바뀝니다. **Popvy 시작하기**를 누르세요.
 
-ZIP을 선호하면 `Popvy-1.3.0-macos-universal.zip`을 풀고 `Popvy.app`을 응용 프로그램 폴더로 옮기면 됩니다. 앱 아이콘은 Dock 대신 화면 위쪽 **메뉴 막대**에 나타납니다.
+앱 아이콘은 Dock 대신 화면 위쪽 **메뉴 막대**에 나타납니다. 설치 파일은 DMG 하나로 제공하며, 개발용 소스는 릴리스의 **Source code**에서 받을 수 있습니다.
 
 ### 첫 실행이 차단된다면
 
-**현재 1.3.0 배포본은 임시 서명(ad-hoc)을 사용하며 Apple Developer ID 서명과 공증을 받지 않았습니다.** 따라서 다운로드한 앱을 macOS가 차단할 수 있습니다.
+**현재 1.3.1 배포본은 임시 서명(ad-hoc)을 사용하며 Apple Developer ID 서명과 공증을 받지 않았습니다.** 따라서 다운로드한 앱을 macOS가 차단할 수 있습니다.
 
 다운로드 출처를 확인하고 실행하기로 결정했다면, 한 번 실행을 시도한 후 **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**를 사용하세요. 조직에서 관리하는 Mac에서는 이 선택이 제한될 수 있습니다. 자세한 내용은 [Apple의 앱 안전 실행 안내](https://support.apple.com/ko-kr/102445)를 참고하세요.
 
@@ -115,7 +115,7 @@ CLANG_MODULE_CACHE_PATH="$PWD/.build/clang-module-cache" \
 SWIFTPM_MODULECACHE_OVERRIDE="$PWD/.build/module-cache" \
 swift test --disable-sandbox
 
-# DMG, ZIP, 소스 ZIP, SHA-256 체크섬 생성
+# DMG와 SHA-256 체크섬 생성
 bash scripts/release.sh
 ```
 
