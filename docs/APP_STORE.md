@@ -15,7 +15,7 @@ App Store용은 `Popvy.xcodeproj`의 `PopvyAppStore` scheme으로 빌드합니�
 
 App Store Connect에 Popvy 앱을 등록하고 2026년 10월 16일 1.3.1(6)을 제출했습니다. 현재 상태는 **심사 대기 중**이며 아직 App Store에 출시되지 않았습니다. 무료 가격, 175개 국가 및 지역, 승인 후 자동 출시로 설정했습니다. 개인정보 표시는 데이터 수집 안 함, 연령 등급은 4+입니다.
 
-EU 배포를 위한 계정의 DSA 자격 등록을 완료했습니다. 한국 배포용 공개 연락처의 등록과 인증은 아직 남아 있습니다. 국가 선택과 실제 출시 가능 여부는 다르므로 지역별 요구 사항도 완료해야 합니다.
+2026년 10월 16일 EU 배포를 위한 계정의 DSA 자격 등록과 한국 배포용 공개 연락처의 이메일 인증을 완료했습니다. App Store Connect에서 디지털 서비스법과 대한민국 전자상거래법 상태가 모두 활성화된 것을 확인했습니다. 실제 출시는 Apple의 앱 심사 승인 후 진행됩니다.
 
 - Apple ID: `6823251149`
 - [App Store Connect 상태 확인](https://appstoreconnect.apple.com/apps/6823251149/distribution)
