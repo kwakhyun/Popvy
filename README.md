@@ -98,7 +98,7 @@ Popvy가 다른 앱에 붙여넣으려면 **손쉬운 사용 권한**이 필요�
 
 ## 소스에서 빌드
 
-Mac App Store용은 별도 Xcode 대상으로 준비 중이며 아직 스토어에서 내려받을 수 없습니다. App Store용은 항목 선택 후 직접 `Command + V`로 붙여넣습니다. 빌드와 심사 자료는 [App Store 배포 안내](docs/APP_STORE.md)에 정리했습니다. 아래 Swift Package 빌드는 자동 붙여넣기를 지원하는 GitHub 버전입니다.
+Mac App Store용 1.3.1(6)은 2026년 10월 16일 심사에 제출했으며 아직 스토어에서 내려받을 수 없습니다. App Store용은 항목 선택 후 직접 `Command + V`로 붙여넣습니다. 빌드와 심사 자료는 [App Store 배포 안내](docs/APP_STORE.md)에 정리했습니다. 아래 Swift Package 빌드는 자동 붙여넣기를 지원하는 GitHub 버전입니다.
 
 Swift 5.9 이상을 제공하는 Xcode 또는 Command Line Tools와 macOS 13 이상이 필요합니다. 외부 패키지 의존성은 없습니다.
 

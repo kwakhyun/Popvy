@@ -13,7 +13,12 @@ App Store용은 `Popvy.xcodeproj`의 `PopvyAppStore` scheme으로 빌드합니�
 | 컴파일 조건 | `APP_STORE` |
 | 권한 | App Sandbox만 사용. 네트워크, 파일 접근 예외, 자동화 권한 없음 |
 
-App Store Connect에 Popvy 앱을 등록하고 2026년 10월 16일 1.3.1(6) 패키지를 업로드했습니다. 업로드 성공과 심사 제출, 승인은 서로 다른 단계입니다. 현재 심사 제출은 완료하지 않았습니다.
+App Store Connect에 Popvy 앱을 등록하고 2026년 10월 16일 1.3.1(6)을 제출했습니다. 현재 상태는 **심사 대기 중**이며 아직 App Store에 출시되지 않았습니다. 무료 가격, 175개 국가 및 지역, 승인 후 자동 출시로 설정했습니다. 개인정보 표시는 데이터 수집 안 함, 연령 등급은 4+입니다.
+
+EU 배포를 위한 계정의 DSA 자격 등록을 완료했습니다. 한국 배포용 공개 연락처의 등록과 인증은 아직 남아 있습니다. 국가 선택과 실제 출시 가능 여부는 다르므로 지역별 요구 사항도 완료해야 합니다.
+
+- Apple ID: `6823251149`
+- [App Store Connect 상태 확인](https://appstoreconnect.apple.com/apps/6823251149/distribution)
 
 App Store용은 마우스 포인터 옆에서 기록을 열고, 선택한 항목을 클립보드에 복사한 다음 창을 즉시 닫습니다. 사용자가 원래 앱에서 Command+V를 누릅니다. 다른 앱의 접근성 API 호출과 키 입력 생성 코드는 컴파일에서 제외합니다. 손쉬운 사용 안내도 표시하지 않습니다.
 
@@ -44,12 +49,15 @@ bash scripts/appstore.sh archive
 - [한국어 스토어 설명과 심사 메모](app-store/ko-KR.md)
 - [개인정보 처리방침](PRIVACY.md)
 - [지원 안내](SUPPORT.md)
+- [등록한 스크린샷](app-store/screenshots/)
 
-스크린샷은 실제 App Store용 앱과 가상 기록으로 촬영합니다. 사용자의 실제 클립보드를 촬영하지 마세요. Apple은 Mac 스크린샷으로 16:10 비율의 1280×800, 1440×900, 2560×1600 또는 2880×1800 이미지를 지원하며 알파 채널 없는 PNG/JPEG를 요구합니다. 이미지가 준비되기 전에는 스크린샷 완료로 표시하지 않습니다.
+스크린샷 두 장은 실제 App Store용 앱과 가상 기록으로 촬영해 1440×900 JPEG로 등록했습니다. 사용자의 실제 클립보드를 촬영하지 마세요. Apple은 Mac 스크린샷으로 16:10 비율의 1280×800, 1440×900, 2560×1600 또는 2880×1800 이미지를 지원하며 알파 채널 없는 PNG/JPEG를 요구합니다.
 
 Xcode의 `PopvyAppStoreDemo` scheme은 `--demo`로 실행해 가상 기록을 보여줍니다. 이 scheme의 실행 인수는 App Store archive에 포함되지 않습니다.
 
-최종 제출 전에는 서명한 샌드박스 앱의 첫 실행, 텍스트/이미지 수집과 수동 붙여넣기, 검색/고정/삭제, 재실행 후 기록 복원, 로그인 실행을 실제로 확인합니다. App Store Connect의 앱 개인정보, 연령 등급, 가격과 제공 국가, 심사 연락처, 거래자 자격 질문도 완료해야 합니다. 거래자 자격과 연락처는 계정 소유자의 실제 정보로 입력합니다.
+이번 제출에서 GitHub용과 App Store용 단위 테스트 각 27개, universal 빌드, Sandbox 및 서명 검증을 통과했습니다. 서명한 archive 앱에서는 테스트 문장 수집, 이전 기록 선택 후 TextEdit에 수동 붙여넣기, 고정과 재실행 후 복원을 확인했습니다. 검색은 가상 기록으로 확인했습니다. 이미지의 앱 간 붙여넣기와 로그인 후 자동 실행은 이번 수동 점검에 포함하지 않았습니다.
+
+다음 릴리스에서도 첫 실행, 텍스트/이미지 수집과 붙여넣기, 검색/고정/삭제, 재실행 후 기록 복원과 로그인 실행을 점검하세요. 거래자 자격과 연락처는 계정 소유자의 실제 정보로 입력합니다.
 
 ## Apple 참고 자료
 
@@ -58,3 +66,4 @@ Xcode의 `PopvyAppStoreDemo` scheme은 `--demo`로 실행해 가상 기록을 �
 - [앱 등록](https://developer.apple.com/help/app-store-connect/create-an-app-record/add-a-new-app/)
 - [스크린샷 규격](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)
 - [개인정보 API 사용 사유](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype)
+- [EU 거래자 자격 등록](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements/)
