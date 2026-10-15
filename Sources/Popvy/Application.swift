@@ -1,5 +1,7 @@
 import AppKit
+#if !APP_STORE
 import ApplicationServices
+#endif
 import Carbon
 import Combine
 import ServiceManagement
@@ -21,7 +23,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
     @Published var isSearchVisible = false { didSet { updatePanelFrame() } }
     @Published var selectedID: UUID?
     @Published var shortcut: Shortcut
-    @Published var accessibilityGranted = AXIsProcessTrusted()
+    @Published var accessibilityGranted = Distribution.accessibilityTrusted
     @Published var autoPaste: Bool { didSet { defaults.set(autoPaste, forKey: "autoPaste") } }
     @Published var keepHistory: Bool {
         didSet {
@@ -39,7 +41,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
     private var settingsWindow: NSWindow?
     private var accessibilityWindow: NSWindow?
     private var targetApplication: NSRunningApplication?
+    #if !APP_STORE
     private var pasteFocus: PasteFocus?
+    #endif
     private var popupAnchor = NSRect.zero
     private var popupScreenFrame = NSRect.zero
     private var workspaceObserver: NSObjectProtocol?
@@ -50,14 +54,14 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
     private var isPasting = false
 
     var visibleEntries: [ClipboardEntry] { store.filtered(query: query, filter: filter) }
-    var canAutoPaste: Bool { autoPaste && accessibilityGranted }
+    var canAutoPaste: Bool { !Distribution.isAppStore && autoPaste && accessibilityGranted }
 
     override init() {
         isDemo = CommandLine.arguments.contains("--demo")
         let defaults = isDemo ? UserDefaults(suiteName: "app.popvy.demo")! : .standard
         self.defaults = defaults
-        accessibilitySetup = AccessibilitySetup(defaults: defaults, isTrusted: AXIsProcessTrusted())
-        let identifiers = [LegacyMigration.legacyIdentifier, "app.popvy.mac"]
+        accessibilitySetup = AccessibilitySetup(defaults: defaults, isTrusted: Distribution.accessibilityTrusted)
+        let identifiers = Distribution.appIdentifiers
         let anotherInstanceRunning = identifiers.contains { identifier in
             NSRunningApplication.runningApplications(withBundleIdentifier: identifier).contains {
                 $0.processIdentifier != ProcessInfo.processInfo.processIdentifier
@@ -66,6 +70,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
         let root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         var historyURL = root.appendingPathComponent("Popvy/history.json")
         var migrationNotice: String?
+        #if !APP_STORE
         if !isDemo, !anotherInstanceRunning {
             do {
                 historyURL = try LegacyMigration.migrate(defaults: defaults,
@@ -75,8 +80,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
                 migrationNotice = "기록 위치를 옮기지 못해 이전 저장 위치를 사용합니다. 다음 실행 때 다시 시도합니다."
             }
         }
-        defaults.register(defaults: ["autoPaste": true, "keepHistory": true, "shortcut": Shortcut.optionV.rawValue])
-        autoPaste = defaults.bool(forKey: "autoPaste")
+        #endif
+        defaults.register(defaults: ["autoPaste": !Distribution.isAppStore, "keepHistory": true, "shortcut": Shortcut.optionV.rawValue])
+        autoPaste = !Distribution.isAppStore && defaults.bool(forKey: "autoPaste")
         let shouldKeepHistory = defaults.bool(forKey: "keepHistory")
         keepHistory = shouldKeepHistory
         shortcut = Shortcut(rawValue: defaults.string(forKey: "shortcut") ?? "") ?? .optionV
@@ -87,10 +93,12 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if !isDemo, !NSRunningApplication.runningApplications(withBundleIdentifier: LegacyMigration.legacyIdentifier).isEmpty {
+        if !isDemo, Distribution.appIdentifiers.filter({ $0 != Bundle.main.bundleIdentifier }).contains(where: {
+            !NSRunningApplication.runningApplications(withBundleIdentifier: $0).isEmpty
+        }) {
             let alert = NSAlert()
-            alert.messageText = "이전 버전을 종료해 주세요"
-            alert.informativeText = "기록과 단축키가 충돌하지 않도록 이전 클립보드 앱을 종료한 뒤 Popvy를 다시 실행해 주세요."
+            alert.messageText = "다른 버전의 Popvy를 종료해 주세요"
+            alert.informativeText = "단축키가 충돌하지 않도록 실행 중인 Popvy 또는 ClipShelf를 종료한 뒤 다시 실행해 주세요."
             alert.runModal()
             NSApp.terminate(nil)
             return
@@ -118,9 +126,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
             self?.statusItem.button?.image = NSImage(systemSymbolName: paused ? "pause.rectangle" : "clipboard", accessibilityDescription: "Popvy")
         }.store(in: &subscriptions)
         launchAtLogin = SMAppService.mainApp.status == .enabled
+        #if !APP_STORE
         trustTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.refreshAccessibility()
         }
+        #endif
         workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main
         ) { [weak self] notification in
@@ -132,7 +142,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
         }
         if isDemo { loadDemo() }
         else { monitor.start() }
-        if !isDemo && accessibilitySetup.shouldPresentOnLaunch {
+        if !Distribution.isAppStore && !isDemo && accessibilitySetup.shouldPresentOnLaunch {
             defaults.set(true, forKey: "hasLaunched")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { self.showAccessibilitySetup() }
         } else if isDemo || !defaults.bool(forKey: "hasLaunched") {
@@ -233,10 +243,15 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
            frontmost.processIdentifier != ProcessInfo.processInfo.processIdentifier {
             targetApplication = frontmost
         }
-        accessibilityGranted = AXIsProcessTrusted()
+        #if !APP_STORE
+        accessibilityGranted = Distribution.accessibilityTrusted
         pasteFocus = targetApplication.flatMap { PasteFocus.capture(pid: $0.processIdentifier) }
+        #endif
         let pointer = NSEvent.mouseLocation
-        popupAnchor = pasteFocus?.caretRect() ?? NSRect(origin: pointer, size: NSSize(width: 1, height: 1))
+        popupAnchor = NSRect(origin: pointer, size: NSSize(width: 1, height: 1))
+        #if !APP_STORE
+        popupAnchor = pasteFocus?.caretRect() ?? popupAnchor
+        #endif
         let anchorPoint = NSPoint(x: popupAnchor.midX, y: popupAnchor.midY)
         let screen = NSScreen.screens.first { $0.frame.contains(anchorPoint) }
             ?? NSScreen.screens.first { $0.frame.contains(pointer) } ?? NSScreen.main
@@ -332,11 +347,14 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
             notice = "클립보드에 복사하지 못했습니다. 다시 시도해 주세요."
             return
         }
-        accessibilityGranted = AXIsProcessTrusted()
+        #if APP_STORE
+        // Release the nonactivating panel immediately so the next ⌘V reaches the original app.
+        hidePanel(restoreFocus: true)
+        #else
+        accessibilityGranted = Distribution.accessibilityTrusted
         guard !copyOnly, canAutoPaste, let target = targetApplication, !target.isTerminated,
               target.processIdentifier != ProcessInfo.processInfo.processIdentifier else {
             showCopied = true
-            // Keep a visible confirmation so permission-free mode is never a silent no-op.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak self] in
                 guard let self, self.showCopied else { return }
                 self.hidePanel(restoreFocus: true)
@@ -351,8 +369,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
             target.activate(options: [])
         }
         finishPaste(to: target, focus: focus, attempt: 0)
+        #endif
     }
 
+    #if !APP_STORE
     private func finishPaste(to target: NSRunningApplication, focus: PasteFocus?, attempt: Int) {
         // Wait for activation and released shortcut modifiers. Never type into a different app.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
@@ -386,6 +406,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
         showPanel()
     }
 
+    #endif
+
     func pin(_ entry: ClipboardEntry) {
         if !store.togglePin(entry.id) { notice = "고정은 최대 20개까지 가능합니다." }
     }
@@ -405,6 +427,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
     }
 
     func showAccessibilitySetup() {
+        #if !APP_STORE
         hidePanel()
         refreshAccessibility()
         if accessibilityGranted { autoPaste = true }
@@ -424,9 +447,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
         accessibilityWindow?.center()
         NSApp.activate(ignoringOtherApps: true)
         accessibilityWindow?.makeKeyAndOrderFront(nil)
+        #endif
     }
 
     func openAccessibilitySettings() {
+        #if !APP_STORE
         accessibilitySetupError = nil
         refreshAccessibility()
         accessibilitySetup.beginRequest()
@@ -440,10 +465,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate, Ob
                 accessibilitySetupError = "설정을 열지 못했습니다. 시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용으로 이동해 주세요."
             }
         }
+        #endif
     }
 
     private func refreshAccessibility() {
-        let trusted = AXIsProcessTrusted()
+        let trusted = Distribution.accessibilityTrusted
         if accessibilityGranted != trusted { accessibilityGranted = trusted }
         if accessibilitySetup.updateTrust(trusted) {
             autoPaste = true

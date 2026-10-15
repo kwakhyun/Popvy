@@ -171,11 +171,11 @@ private struct CompactEntryRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(entry.isImage ? "이미지 붙여넣기" : "붙여넣기: \(entry.preview)")
+            .accessibilityLabel(entry.isImage ? "이미지 \(Distribution.selectionVerb)" : "\(Distribution.selectionVerb): \(entry.preview)")
             Menu {
                 Button(entry.isPinned ? "고정 해제" : "고정", action: pin)
                 Button("복사만 하기", action: copy)
-                if !entry.isImage { Button("서식 없이 붙여넣기", action: plainText) }
+                if !entry.isImage { Button(Distribution.isAppStore ? "서식 없이 복사" : "서식 없이 붙여넣기", action: plainText) }
                 Divider()
                 Button("삭제", role: .destructive, action: remove)
             } label: {
@@ -190,7 +190,7 @@ private struct CompactEntryRow: View {
         .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(selected || hovering ? accent.opacity(0.65) : .primary.opacity(0.08)))
         .onHover { hovering = $0 }
         .contextMenu {
-            Button("붙여넣기", action: use)
+            Button(Distribution.selectionVerb, action: use)
             Button(entry.isPinned ? "고정 해제" : "고정", action: pin)
             Button("복사만 하기", action: copy)
             Button("삭제", role: .destructive, action: remove)
@@ -203,6 +203,7 @@ private struct CompactEntryRow: View {
 struct SettingsView: View {
     @ObservedObject var app: AppController
     @ObservedObject var store: HistoryStore
+    @State private var showsPrivacy = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -223,6 +224,10 @@ struct SettingsView: View {
                 }
                 Toggle("로그인할 때 자동 실행", isOn: Binding(get: { app.launchAtLogin }, set: { app.setLaunchAtLogin($0) }))
                 Divider()
+                #if APP_STORE
+                Text("항목을 선택한 뒤 원래 앱에서 ⌘ V로 붙여넣으세요. 기록 창은 마우스 포인터 옆에 나타납니다.")
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                #else
                 Toggle("선택한 항목 바로 붙여넣기", isOn: $app.autoPaste)
                 HStack(spacing: 7) {
                     Image(systemName: app.accessibilityGranted ? "checkmark.circle.fill" : "info.circle")
@@ -233,6 +238,7 @@ struct SettingsView: View {
                     if !app.accessibilityGranted { Button("권한 설정") { app.requestAccessibility() }.font(.system(size: 11)) }
                 }
                 Divider()
+                #endif
                 Toggle("앱을 종료해도 기록 보관", isOn: $app.keepHistory)
                 Text("최근 100개, 최대 50 MB를 이 Mac에 저장합니다. 고정은 최대 20개입니다. 끄면 디스크의 기록을 지우고 실행 중에만 보관합니다.")
                     .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true).lineSpacing(4)
@@ -249,8 +255,14 @@ struct SettingsView: View {
             HStack {
                 Button("모든 기록 삭제…", role: .destructive) { app.confirmClear(includingPinned: true) }
                 Spacer()
-                Text("Popvy 1.3.1").font(.system(size: 11)).foregroundStyle(.tertiary)
+                Text("Popvy \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "개발 버전")").font(.system(size: 11)).foregroundStyle(.tertiary)
             }
+            HStack {
+                Button("개인정보 처리방침") { showsPrivacy = true }.buttonStyle(.link)
+                Spacer()
+                Link("문의 및 버그 제보", destination: URL(string: "https://github.com/kwakhyun/Popvy/issues")!)
+            }.font(.system(size: 11))
         }.padding(28).frame(width: 510).fixedSize(horizontal: false, vertical: true).tint(accent)
+            .sheet(isPresented: $showsPrivacy) { PrivacyView() }
     }
 }

@@ -1,5 +1,7 @@
 import AppKit
+#if !APP_STORE
 import ApplicationServices
+#endif
 
 enum PopupPlacement {
     static let width: CGFloat = 336
@@ -28,6 +30,7 @@ enum PopupPlacement {
     }
 }
 
+#if !APP_STORE
 /// Remembers the input control before showing the popup. Never reads the user's text.
 struct PasteFocus {
     let application: AXUIElement
@@ -84,3 +87,5 @@ struct PasteFocus {
         return true
     }
 }
+
+#endif

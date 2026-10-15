@@ -2,6 +2,8 @@
 set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
+source "$PROJECT_DIR/scripts/signing.sh"
+popvy_configure_signing
 export CLANG_MODULE_CACHE_PATH="$PROJECT_DIR/.build/clang-module-cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="$PROJECT_DIR/.build/module-cache"
 BUILD_ARGS=(--configuration release --disable-sandbox)
@@ -22,8 +24,7 @@ cp "$PROJECT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 cp "$PROJECT_DIR/LICENSE" "$APP_DIR/Contents/Resources/LICENSE.txt"
 swift "$PROJECT_DIR/scripts/make-icon.swift" "$PROJECT_DIR/build"
 iconutil -c icns "$PROJECT_DIR/build/Popvy.iconset" -o "$APP_DIR/Contents/Resources/Popvy.icns"
-codesign --force --deep --sign - --identifier app.popvy.mac "$APP_DIR"
-codesign --verify --deep --strict "$APP_DIR"
+popvy_sign_app "$APP_DIR"
 if [ "${1:-native}" = universal ]; then
     ARCHITECTURES=" $(lipo -archs "$APP_DIR/Contents/MacOS/Popvy") "
     if [[ "$ARCHITECTURES" != *" arm64 "* || "$ARCHITECTURES" != *" x86_64 "* ]]; then

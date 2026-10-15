@@ -9,6 +9,13 @@ dist/
 *.mobileprovision
 .env
 .env.*
+.popvy-signing.plist*
+*.certSigningRequest
+*.key
 
 # Local validation notes (not public source)
 VALIDATION.md
+
+# Local Xcode account state and provisioning files
+xcuserdata/
+*.provisionprofile

@@ -31,9 +31,9 @@ DMG에는 Popvy.app, Applications 바로가기, 설치 안내와 라이선스가
 
 ## 서명과 공증
 
-기본 스크립트는 **로컬 임시 서명만** 합니다. GitHub에 올리는 것만으로 Apple 공증이 생기지는 않습니다. 첫 실행 과정을 단순하게 하려면 Apple Developer Program의 **Developer ID Application** 인증서로 서명하고 Apple에 공증을 요청해야 합니다. [Apple Developer ID 안내](https://developer.apple.com/developer-id/), [공증 문서](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)를 참고하세요.
+공개된 1.3.1은 임시 서명입니다. 현재 소스의 빌드 스크립트는 **Developer ID 서명**도 지원하며, 배포 스크립트는 인증서 지정을 기본으로 요구합니다. [서명 안내](SIGNING.md)에 따라 설정하세요. GitHub에 올리는 것만으로 Apple 공증이 생기지는 않습니다. 첫 실행 과정을 단순하게 하려면 Apple Developer Program의 **Developer ID Application** 인증서로 서명하고 Apple에 공증을 요청해야 합니다. [Apple Developer ID 안내](https://developer.apple.com/developer-id/), [공증 문서](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)를 참고하세요.
 
-현재 패키징 스크립트에는 Developer ID 서명 및 공증 자동화가 포함되어 있지 않습니다. 공증 배포로 전환할 때는 다음 순서로 확장해야 합니다.
+현재 패키징 스크립트에는 Developer ID 서명이 포함되어 있지만 공증 자동화는 아직 없습니다. 공증 배포로 전환할 때는 다음 순서로 확장해야 합니다.
 
 1. universal 앱에 Developer ID 서명, hardened runtime과 secure timestamp를 적용합니다.
 2. `notarytool`로 앱을 제출하고 Accepted 결과를 확인합니다.
@@ -42,4 +42,4 @@ DMG에는 Popvy.app, Applications 바로가기, 설치 안내와 라이선스가
 5. Gatekeeper 평가와 별도 Mac에서의 다운로드 설치를 확인합니다.
 6. 파일을 모두 확정한 뒤 체크섬을 새로 생성하고, README와 설치 안내, 릴리스 본문의 서명 상태를 실제 결과에 맞게 변경합니다.
 
-공증 후 기본 `release.sh`를 다시 실행하면 새 임시 서명 빌드를 만들므로 공증된 앱을 유지할 수 없습니다. 인증서, 개인 키, 앱 전용 암호는 저장소나 배포 파일에 넣지 마세요.
+공증 후 `release.sh`를 다시 실행하면 앱을 새로 빌드하므로 기존 공증 티켓을 유지할 수 없습니다. 인증서, 개인 키, 앱 전용 암호는 저장소나 배포 파일에 넣지 마세요.

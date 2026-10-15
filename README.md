@@ -72,6 +72,8 @@ Popvy가 다른 앱에 붙여넣으려면 **손쉬운 사용 권한**이 필요�
 
 앱이 꺼져 있거나 수집을 일시 정지한 동안 복사한 내용은 나중에 수집하지 않습니다.
 
+자세한 내용은 [개인정보 처리방침](docs/PRIVACY.md)과 [지원 안내](docs/SUPPORT.md)를 참고하세요.
+
 ## 문제 해결
 
 **단축키를 눌러도 열리지 않아요.**
@@ -96,6 +98,8 @@ Popvy가 다른 앱에 붙여넣으려면 **손쉬운 사용 권한**이 필요�
 
 ## 소스에서 빌드
 
+Mac App Store용은 별도 Xcode 대상으로 준비 중이며 아직 스토어에서 내려받을 수 없습니다. App Store용은 항목 선택 후 직접 `Command + V`로 붙여넣습니다. 빌드와 심사 자료는 [App Store 배포 안내](docs/APP_STORE.md)에 정리했습니다. 아래 Swift Package 빌드는 자동 붙여넣기를 지원하는 GitHub 버전입니다.
+
 Swift 5.9 이상을 제공하는 Xcode 또는 Command Line Tools와 macOS 13 이상이 필요합니다. 외부 패키지 의존성은 없습니다.
 
 ```sh
@@ -115,11 +119,11 @@ CLANG_MODULE_CACHE_PATH="$PWD/.build/clang-module-cache" \
 SWIFTPM_MODULECACHE_OVERRIDE="$PWD/.build/module-cache" \
 swift test --disable-sandbox
 
-# DMG와 SHA-256 체크섬 생성
+# DMG와 SHA-256 체크섬 생성 (Developer ID 설정 필요)
 bash scripts/release.sh
 ```
 
-출력 경로, 공개 절차, 서명과 공증은 [배포 안내](docs/RELEASING.md)를 참고하세요. `--demo` 실행 옵션은 가상 기록만 보여주며 실제 클립보드를 수집하거나 기록 파일에 저장하지 않습니다. 실제 앱과 동시에 실행하지 마세요.
+업데이트 후 권한을 유지하기 위한 Developer ID 설정은 [서명 안내](docs/SIGNING.md)를, 출력 경로와 공개 절차는 [배포 안내](docs/RELEASING.md)를 참고하세요. 공개된 1.3.1은 임시 서명이며, 새 배포 스크립트는 Developer ID 설정을 기본으로 요구합니다. `--demo` 실행 옵션은 가상 기록만 보여주며 실제 클립보드를 수집하거나 기록 파일에 저장하지 않습니다. 실제 앱과 동시에 실행하지 마세요.
 
 SwiftUI, AppKit, Carbon, ServiceManagement로 구현했습니다. 버그를 제보할 때는 macOS 버전, Mac의 칩 종류, Popvy 버전, 재현 방법을 포함해 주세요. 실제 클립보드 내용이나 비밀번호는 첨부하지 마세요.
 
